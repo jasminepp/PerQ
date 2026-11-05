@@ -1,0 +1,8 @@
+# Dataset
+dataset_name: Kodak
+dataset_dir: datasets/Kodak
+dataset_type: multi_images
+video_name: ~
+video_size: [-1, -1, -1]
+patch_size: [-1, -1, -1]
+fmt: png

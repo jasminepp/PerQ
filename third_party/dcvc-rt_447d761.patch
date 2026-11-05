@@ -1,0 +1,69 @@
+Patch to microsoft/DCVC 447d761 (Copyright (c) Microsoft Corporation, MIT License)
+
+--- a/src/cpp/py_rans/py_rans.cpp
++++ b/src/cpp/py_rans/py_rans.cpp
+@@ -10,6 +10,7 @@
+ #include <vector>
+ 
+ namespace py = pybind11;
++using namespace dcvc;
+ 
+ RansEncoder::RansEncoder()
+ {
+@@ -304,6 +305,7 @@
+     return m_use_two_decoders;
+ }
+ 
++namespace dcvc {
+ std::vector<uint32_t> pmf_to_quantized_cdf(const std::vector<float>& pmf, int precision)
+ {
+     /* NOTE(begaintj): ported from `ryg_rans` public implementation. Not optimal
+@@ -362,6 +364,7 @@
+ 
+     return cdf;
+ }
++} // namespace dcvc
+ 
+ PYBIND11_MODULE(MLCodec_extensions_cpp, m)
+ {
+@@ -389,5 +392,5 @@
+         .def("set_use_two_decoders", &RansDecoder::set_use_two_decoders)
+         .def("get_use_two_decoders", &RansDecoder::get_use_two_decoders);
+ 
+-    m.def("pmf_to_quantized_cdf", &pmf_to_quantized_cdf, "Return quantized CDF for a given PMF");
++    m.def("pmf_to_quantized_cdf", &dcvc::pmf_to_quantized_cdf, "Return quantized CDF for a given PMF");
+ }
+--- a/src/cpp/py_rans/py_rans.h
++++ b/src/cpp/py_rans/py_rans.h
+@@ -11,6 +11,8 @@
+ 
+ namespace py = pybind11;
+ 
++namespace dcvc {
++
+ // the classes in this file only perform the type conversion
+ // from python type (numpy) to C++ type (vector)
+ class RansEncoder {
+@@ -69,3 +71,5 @@
+ };
+ 
+ std::vector<uint32_t> pmf_to_quantized_cdf(const std::vector<float>& pmf, int precision);
++
++} // namespace dcvc
+--- a/src/layers/extensions/inference/common.h
++++ b/src/layers/extensions/inference/common.h
+@@ -268,8 +268,12 @@
+     return make_vec4(reciprocal(a.x), reciprocal(a.y), reciprocal(a.z), reciprocal(a.w));
+ }
+ 
+-template <typename T1, typename T2>
+-__forceinline__ __device__ bool4 operator>(const T1& a, const T2& b)
++__forceinline__ __device__ bool4 operator>(const float4& a, const float& b)
++{
++    return make_vec4(a.x > b, a.y > b, a.z > b, a.w > b);
++}
++
++__forceinline__ __device__ bool4 operator>(const Half4& a, const c10::Half& b)
+ {
+     return make_vec4(a.x > b, a.y > b, a.z > b, a.w > b);
+ }

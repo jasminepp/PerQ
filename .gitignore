@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+outputs/
+weights/
+datasets/
+*.bin
+*.pth
+*.pt
+condaenv.*.requirements.txt
+third_party/DCVC/

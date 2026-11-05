@@ -1,0 +1,8 @@
+# Dataset
+dataset_name: CLIC2020-test
+dataset_dir: datasets/CLIC2020-test
+dataset_type: multi_images
+video_name: ~
+video_size: [-1, -1, -1]
+patch_size: [-1, -1, -1]
+fmt: png

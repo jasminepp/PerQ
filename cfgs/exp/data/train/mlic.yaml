@@ -1,0 +1,8 @@
+# Dataset
+dataset_name: MLIC
+dataset_dir: datasets/MLIC
+dataset_type: multi_images
+video_name: ~
+video_size: [-1, -1, -1]
+patch_size: [1, 256, 256]
+fmt: png

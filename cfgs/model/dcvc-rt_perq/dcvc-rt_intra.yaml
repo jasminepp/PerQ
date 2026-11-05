@@ -1,0 +1,29 @@
+model_name: DCVC-RT_Intra
+model_type: dcvc-rt_custom_intra
+model_cfg:
+    init_type: default
+    fmt: rgb444
+    model_cfg:
+        rate_quant: uniform-noise
+        dist_quant: ste
+        em_dist: gaussian
+        use_log_scale: true
+        q_scale_mode: bottleneck-pre-prior
+        q_scale_pair: true
+        q_scale_mono: true
+        q_scale_bound: [0.025, 40.0]
+        y_channels: 256
+        z_channels: 128
+        enc_channels: 368
+        dec_channels: 368
+        enc_depth: 6
+        dec_depth: 12
+        hyper_enc_depth: 3
+        hyper_dec_depth: 3
+        prior_depth: 3
+        enc_block: dcvc-rt
+        dec_block: dcvc-rt
+        hyper_enc_block: dcvc-rt
+        hyper_dec_block: dcvc-rt
+        qp_num: 64
+weight_decay: 1.0e-2

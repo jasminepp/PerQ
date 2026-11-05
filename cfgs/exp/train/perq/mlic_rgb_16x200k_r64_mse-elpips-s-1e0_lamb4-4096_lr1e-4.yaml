@@ -1,0 +1,78 @@
+# Rate point config
+num_rp: 64
+lamb_range: [4., 4096.]
+eval_rp: [0, 9, 18, 27, 36, 45, 54, 63]
+
+# Output
+output_dir: outputs
+exp_name: mlic_rgb_16x200k_r64_mse-elpips-s-1e0_lamb4-4096_lr1e-4
+
+# Logging
+eval_enable_log: true
+
+# Resuming
+pretrain: ~
+resume: ~
+resume_if_exists: true
+
+# Misc
+seed: 0
+workers: -1
+prefetch_factor: -1
+pin_mem: true
+eval_only: false
+
+# Nested configs
+train_data_cfgs: [cfgs/exp/data/train/mlic.yaml]
+eval_data_cfgs: [cfgs/exp/data/eval/kodak.yaml]
+train_cfgs:
+  # Training settings
+  - iters: 200000
+    warmup_iters: 10000
+    rate_loss_warmup_ratio: 0.0
+    lamb_warmup_ratio: 0.0
+    eval_iters: 25000
+    log_iters: 25000
+
+    # Batch size
+    grad_accum: 1
+    batch_size: 16
+    auto_batch_size_scale: true
+
+    # Loss & metric
+    loss_cfgs:
+      - {name: perceptual, weight: 1.0,
+         loss_cfgs: [[1.0, rgb444, mse], [1.0, rgb444, e-lpips, {model: vgg, dtype: float16}]],
+         lamb_scale: [true, true]}
+    metric_cfgs: [[rgb444, psnr], [rgb444, ms-ssim], [rgb444, lpips, {model: alex, dtype: float16}]]
+
+    # Other settings
+    max_norm: 1.0
+    norm_type: 2.0
+
+    # Optimizer & scheduler
+    opt_sch_cfg:
+      opt: adamw
+      sched: multistep
+      decay_milestones: [0.5, 0.75, 0.875, 0.9375]
+      lr: 1.0e-4
+      warmup_lr: 1.0e-6
+      min_lr: 1.0e-6
+      weight_decay: 0.0
+eval_cfg:
+  # Evaluation
+  iters: -1
+
+  # Batch size
+  batch_size: 1
+
+  # Loss & metric
+  loss_cfgs:
+    - {name: perceptual, weight: 1.0,
+       loss_cfgs: [[1.0, rgb444, mse], [1.0, rgb444, e-lpips, {model: vgg, dtype: float16}]],
+       lamb_scale: [true, true]}
+  metric_cfgs: [[rgb444, psnr], [rgb444, ms-ssim],
+                [rgb444, lpips, {model: alex, dtype: float16}], [rgb444, dists, {dtype: float16}]]
+
+  # Distribution metric
+  dist_metric_cfgs: [[rgb444, fid], [rgb444, kid]]

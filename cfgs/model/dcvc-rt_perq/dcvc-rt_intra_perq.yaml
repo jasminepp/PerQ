@@ -1,0 +1,63 @@
+model_name: DCVC-RT_Intra_PerQ
+model_type: dcvc-rt_perq_intra
+model_cfg:
+    init_type: default
+    fmt: rgb444
+    model_cfg:
+        rate_quant: uniform-noise
+        dist_quant: ste
+        em_dist: gaussian
+        use_log_scale: true
+        q_scale_mode: bottleneck-pre-prior
+        q_scale_pair: true
+        q_scale_mono: true
+        q_scale_bound: [0.025, 40.0]
+        y_channels: 256
+        z_channels: 128
+        enc_channels: 368
+        dec_channels: 368
+        enc_depth: 6
+        dec_depth: 12
+        hyper_enc_depth: 3
+        hyper_dec_depth: 3
+        prior_depth: 3
+        enc_block: dcvc-rt
+        dec_block: dcvc-rt
+        hyper_enc_block: dcvc-rt
+        hyper_dec_block: dcvc-rt
+        qp_num: 64
+    perq_type: flow_matching
+    perq_kwargs:
+        block_type: convnext
+        hidden_ch: 512
+        num_blocks: 10
+        expansion: 4
+        bound_mode: tanh
+        bound_scale: 0.1
+        clamp_unit_bound: true
+        zero_init_head: true
+        noise_sigma: 0.029
+        use_dec_scale: true
+        use_dec_scale_loss: false
+        z_upsample: learned
+    perq_train_steps: [4]
+    perq_inference_steps: 4
+    perq_latent_loss_scale: 1.0e+4
+    freeze_backbone: true
+    gan_cfg:
+        disc_type: ms_rp_patch_gan
+        disc_cfg:
+            in_channels: 3
+            base_channels: 48
+            n_layers: 3
+            num_rp: 64
+            num_scales: 3
+        weight_max: 0.1
+        weight_type: fixed
+        start_iter: 20000
+        warmup_iters: 20000
+        g_loss_type: hinge
+        d_loss_type: hinge
+        enable_diag: true
+    load_pretrain_gan: false
+weight_decay: 1.0e-2
